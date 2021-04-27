@@ -1,0 +1,255 @@
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.0/echarts.common.js"></script>
+<div>
+  <div style="width: 50%">
+    <div id="echarts-wrapper" style="height: 300px"></div>
+  </div>
+  <div style="width: 50%">
+    <div id="echarts-bar-wrapper" style="height: 300px"></div>
+  </div>
+</div>
+<button id="button">update</button>
+
+<script>
+  button.onclick = () => {
+    update()
+  }
+  class MyProjectChart {
+    constructor(el) {
+      this.myChart = echarts.init(el)
+      MyProjectChart.echartsQueue.push(this.myChart)
+      this.option = null
+    }
+    createCustomChart(option) {
+      if (!option) {
+        console.warn('please set customChart option')
+        return
+      }
+      this.option = option
+      return this.init()
+    }
+    init() {
+      this.myChart.setOption(this.option)
+      return this.option
+    }
+    buildSeriesData(val, type, smooth) {
+      let series = []
+      if (val[0] && typeof val[0] === 'object') {
+        series = val.map(item => {
+          const { values = [], name = '', ...rest } = item
+          let obj = {
+            type,
+            name,
+            data: values,
+            ...rest
+          }
+          if (type === 'line' && smooth) {
+            obj.smooth = smooth
+          }
+          return obj
+        })
+      } else {
+        let obj = {
+          data: val,
+          type: 'line'
+        }
+        if (type === 'line' && smooth) {
+          obj.smooth = smooth
+        }
+
+        series = [obj]
+      }
+      this.myChart.setOption({
+        series
+      })
+    }
+    buildXAxisData(val) {
+      this.myChart.setOption({
+        xAxis: {
+          data: val
+        }
+      })
+    }
+    createLineChart(option, smooth = false) {
+      const _this = this
+
+      this.option = {
+        tooltip: {
+          show: true,
+          trigger: 'axis'
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [150, 230, 224, 218, 135, 147, 260],
+            type: 'line'
+          }
+        ],
+        ...option,
+        set seriesData(val) {
+          _this.buildSeriesData(val, 'line', smooth)
+        },
+        set xAxisData(val) {
+          _this.buildXAxisData(val)
+        }
+      }
+
+      return _this.init()
+    }
+    createBarChart(option = {}) {
+      const _this = this
+
+      this.option = {
+        tooltip: {
+          show: true,
+          trigger: 'item'
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [150, 230, 224, 218, 135, 147, 260],
+            type: 'bar'
+          }
+        ],
+        ...option,
+        set seriesData(val) {
+          _this.buildSeriesData(val, 'bar')
+        },
+        set xAxisData(val) {
+          _this.buildXAxisData(val)
+        }
+      }
+
+      return _this.init()
+    }
+  }
+
+  MyProjectChart.echartsQueue = []
+
+  const lineChart = chart('#echarts-wrapper').createLineChart({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: '#6a7985'
+        }
+      }
+    }
+  })
+
+  const barChart = chart('#echarts-bar-wrapper').createBarChart()
+
+  update()
+
+  function update() {
+    lineChart.xAxisData = [
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random())
+    ]
+
+    barChart.xAxisData = [
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random()),
+      parseInt(1000 * Math.random())
+    ]
+
+    lineChart.seriesData = [
+      {
+        name: 'line1',
+        areaStyle: {},
+        emphasis: {
+          focus: 'series'
+        },
+        values: [
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random())
+        ]
+      },
+      {
+        name: 'line2',
+        areaStyle: {},
+        emphasis: {
+          focus: 'series'
+        },
+        values: [
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random())
+        ]
+      }
+    ]
+
+    barChart.seriesData = [
+      {
+        name: 'line1',
+        values: [
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random())
+        ]
+      },
+      {
+        name: 'line2',
+        values: [
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random()),
+          parseInt(1000 * Math.random())
+        ]
+      }
+    ]
+  }
+
+  function chart(el) {
+    if (typeof el === 'string') {
+      let reg = /([\.\#]*)/gi
+      reg.test(el) && (el = document.querySelector(el))
+    }
+    return new MyProjectChart(el)
+  }
+
+  window.onload = function () {
+    window.onresize = function () {
+      MyProjectChart.echartsQueue.forEach(chart => {
+        chart.resize()
+      })
+    }
+  }
+</script>
